@@ -92,7 +92,6 @@ baticon.image = image(beautiful.widget_bat)
 batwidget = widget({ type = "textbox" })
 -- Register widget
 vicious.register(batwidget, vicious.widgets.bat,
-
 function (widget, args)
   if   args[2] >= 99 then 
     return "" 
@@ -101,7 +100,6 @@ function (widget, args)
     return string.format("%s%s %s",args[1],args[2],args[3])
   end
       end, 
-
   61, "BAT0")
 -- }}}
 
@@ -137,7 +135,7 @@ for _, w in pairs(fs) do
      beautiful.fg_center_widget, beautiful.fg_end_widget
   }) -- Register buttons
   w.widget:buttons(awful.util.table.join(
-    awful.button({ }, 1, function () exec("thunar", false) end)
+    awful.button({ }, 1, function () exec("rox", false) end)
   ))
 end -- Enable caching
 vicious.cache(vicious.widgets.fs)
@@ -287,7 +285,7 @@ for s = 1, screen.count() do
         separator, 
 	fstextwidget, 
 	fs.h.widget, fs.r.widget, fsicon,
-        separator, membar.widget, memicon,
+        --separator, membar.widget, memicon,
         separator, cpugraph.widget, cpuicon, 
 	-- separator, screen.count() and systray or nil,
         separator, ["layout"] = awful.widget.layout.horizontal.rightleft
