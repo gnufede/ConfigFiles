@@ -75,22 +75,14 @@ cpuicon = widget({ type = "imagebox" })
 cpuicon.image = image(beautiful.widget_cpu)
 -- Initialize widgets
 cpugraph  = awful.widget.graph()
-cpugraph2  = awful.widget.graph()
 tzswidget = widget({ type = "textbox" })
 -- Graph properties
-cpugraph2:set_width(20):set_height(14)
-cpugraph2:set_background_color(beautiful.fg_off_widget)
-cpugraph2:set_gradient_angle(0):set_gradient_colors({
-   beautiful.fg_end_widget, beautiful.fg_center_widget, beautiful.fg_widget
-}) -- Register widgets
 cpugraph:set_width(20):set_height(14)
 cpugraph:set_background_color(beautiful.fg_off_widget)
 cpugraph:set_gradient_angle(0):set_gradient_colors({
    beautiful.fg_end_widget, beautiful.fg_center_widget, beautiful.fg_widget
 }) -- Register widgets
 vicious.register(cpugraph,  vicious.widgets.cpu,      "$1")
-vicious.register(cpugraph2,  vicious.widgets.cpu,      "$2")
-vicious.register(tzswidget, vicious.widgets.thermal, " $1C", 19, "thermal_zone0")
 -- }}}
 
 -- {{{ Battery state
@@ -113,25 +105,25 @@ function (widget, args)
   61, "BAT0")
 -- }}}
 
--- {{{ Memory usage
-memicon = widget({ type = "imagebox" })
-memicon.image = image(beautiful.widget_mem)
--- Initialize widget
-membar = awful.widget.progressbar()
+---- {{{ Memory usage
+--memicon = widget({ type = "imagebox" })
+--memicon.image = image(beautiful.widget_mem)
+---- Initialize widget
+--membar = awful.widget.progressbar()
 -- Pogressbar properties
-membar:set_vertical(true):set_ticks(true)
-membar:set_height(12):set_width(8):set_ticks_size(2)
-membar:set_background_color(beautiful.fg_off_widget)
-membar:set_gradient_colors({ beautiful.fg_widget,
-   beautiful.fg_center_widget, beautiful.fg_end_widget
-}) -- Register widget
-vicious.register(membar, vicious.widgets.mem, "$1", 13)
--- }}}
+--membar:set_vertical(true):set_ticks(true)
+--membar:set_height(12):set_width(8):set_ticks_size(2)
+--membar:set_background_color(beautiful.fg_off_widget)
+--membar:set_gradient_colors({ beautiful.fg_widget,
+--  beautiful.fg_center_widget, beautiful.fg_end_widget
+--}) -- Register widget
+--vicious.register(membar, vicious.widgets.mem, "$1", 13)
+---- }}}
 
 -- {{{ File system usage
 fsicon = widget({ type = "imagebox" })
 fsicon.image = image(beautiful.widget_fs)
--- Initialize widgets
+---- Initialize widgets
 fs = {
   r = awful.widget.progressbar(), h = awful.widget.progressbar()
 }
@@ -145,7 +137,7 @@ for _, w in pairs(fs) do
      beautiful.fg_center_widget, beautiful.fg_end_widget
   }) -- Register buttons
   w.widget:buttons(awful.util.table.join(
-    awful.button({ }, 1, function () exec("rox", false) end)
+    awful.button({ }, 1, function () exec("thunar", false) end)
   ))
 end -- Enable caching
 vicious.cache(vicious.widgets.fs)
@@ -158,7 +150,7 @@ vicious.register(fs.h, vicious.widgets.fs, "${/home used_p}",        599)
 -- Initialize widget
 fstextwidget = widget({ type = "textbox" })
 -- Register widget
-vicious.register(fstextwidget, vicious.widgets.fs, "${/home avail_gb}GB", 599)
+vicious.register(fstextwidget, vicious.widgets.fs, "${/home avail_gb}gb", 599)
 -- }}}
 
 -- {{{ Network usage
@@ -296,7 +288,7 @@ for s = 1, screen.count() do
 	fstextwidget, 
 	fs.h.widget, fs.r.widget, fsicon,
         separator, membar.widget, memicon,
-        separator, cpugraph.widget, cpuicon, cpugraph2.widget, cpuicon,
+        separator, cpugraph.widget, cpuicon, 
 	-- separator, screen.count() and systray or nil,
         separator, ["layout"] = awful.widget.layout.horizontal.rightleft
     }
