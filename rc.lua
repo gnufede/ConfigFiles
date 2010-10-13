@@ -31,7 +31,7 @@ local exec   = awful.util.spawn
 local sexec  = awful.util.spawn_with_shell
 
 -- Beautiful theme
-beautiful.init("/home/gnufede/.config/awesome/zenburn.lua")
+beautiful.init( home .. "/.config/awesome/zenburn.lua")
 
 -- Window management layouts
 layouts = {
@@ -93,11 +93,11 @@ batwidget = widget({ type = "textbox" })
 -- Register widget
 vicious.register(batwidget, vicious.widgets.bat,
 function (widget, args)
-  if   args[2] >= 99 then 
-    return "" 
+  if (args[1] == '+' or args[1] == '-') and ( args[2] <= 98) then 
+    return string.format("%s%s %s",args[1],args[2],args[3])
   --  return string.format("%02d%02d %02d", args[1], args[2], args[3])
   else
-    return string.format("%s%s %s",args[1],args[2],args[3])
+    return string.format("%s%s",args[1],args[2])
   end
       end, 
   61, "BAT0")
@@ -159,9 +159,31 @@ upicon.image = image(beautiful.widget_netup)
 -- Initialize widget
 netwidget = widget({ type = "textbox" })
 -- Register widget
-vicious.register(netwidget, vicious.widgets.net, '<span color="'
-  .. beautiful.fg_netdn_widget ..'">${wlan1 down_kb}</span> <span color="'
-  .. beautiful.fg_netup_widget ..'">${wlan1 up_kb}</span>', 3)
+vicious.register(netwidget, vicious.widgets.net,
+
+-- function (widget, args)
+--   local f = io.popen("iwconfig 2>/dev/null | grep 802.11 | cut -d' ' -f1")
+--   print (f)
+--   local l = f:read("*a")
+--   f.close()
+--  if (args[1] == '+' or args[1] == '-') and ( args[2] >= 99) then 
+--    return string.format("%s%s %s",args[1],args[2],args[3])
+--  else
+--    return string.format("%s%s",args[1],args[2])
+--   end
+--    return string.format("%s %s %s %s", args[1],args[2],args[3],args[4])
+--     end
+--
+--   return '<span color="'
+--  .. beautiful.fg_netdn_widget ..'">${' .. l .. ' down_kb}</span> <span color="'
+--  .. beautiful.fg_netup_widget ..'">${' .. l .. ' up_kb}</span>'
+--  end --FIXME
+
+ '<span color="'
+  .. beautiful.fg_netdn_widget ..'">${wlan0 down_kb}</span> <span color="'
+  .. beautiful.fg_netup_widget ..'">${wlan0 up_kb}</span>'
+
+, 3)
 -- }}}
 
 -- {{{ Mail subject
@@ -211,8 +233,29 @@ volwidget:buttons(volbar.widget:buttons())
 vicious.cache(vicious.widgets.gmail)
 gmailicon = widget({ type = "imagebox" })
 gmailicon.image = image(beautiful.widget_mail)
+
+gmailbar    = awful.widget.progressbar()
+--gmailbar:set_vertical(true):set_ticks(true)
+--gmailbar:set_height(12):set_width(9):set_ticks_size(1)
+--gmailbar:set_background_color(beautiful.fg_off_widget)
+--gmailbar:set_gradient_colors({ beautiful.fg_widget,
+--   beautiful.fg_center_widget, beautiful.fg_end_widget
+--}) -- Enable caching
+--vicious.register(gmailbar, vicious.widgets.gmail,"${count}", 190)
+gmailbar.widget:buttons(awful.util.table.join(
+   awful.button({ }, 1, function () exec("chromium-browser --app=http://mail.google.com", false) end)
+))
 gmailwidget = widget({ type = "textbox" })
-vicious.register(gmailwidget, vicious.widgets.gmail,"<span color='#F1F1F1'>${count1}</span>,<span color='#C1C1C1'>${count}</span>", 190)
+vicious.register(gmailwidget, vicious.widgets.gmail,
+
+"${count}"
+--"<span color='#F1F1F1'>${count1}</span>,<span color='#C1C1C1'>${count}</span>" --FIXME
+
+, 190)
+-- Register assigned buttons
+gmailwidget:buttons(gmailbar.widget:buttons())
+-- }}}
+
 -- {{{ Date and time
 dateicon = widget({ type = "imagebox" })
 dateicon.image = image(beautiful.widget_date)
@@ -285,7 +328,8 @@ for s = 1, screen.count() do
         separator, volwidget,  volbar.widget, volicon,
         --separator, orgwidget,  orgicon,
         separator, weathertext,  weathericon,
-        separator, 
+        separator,
+	--gmailbar, 
 	gmailwidget, 
 	gmailicon,
         separator, upicon,     netwidget, dnicon,
@@ -488,8 +532,12 @@ awful.rules.rules = {
       border_width = beautiful.border_width,
       border_color = beautiful.border_normal }
     },
+    { rule = { class = "Chrome",  instance = "chrome", name = "Inbox - gnu.fede@gmail.com - Gmail"},
+      properties = { tag = tags[screen.count()][4] } },
+    { rule = { class = "Chrome",  instance = "chrome", name = "Priority Inbox - gnu.fede@gmail.com - Gmail"},
+      properties = { tag = tags[screen.count()][4] } },
     { rule = { class = "Chrome",  instance = "chrome" },
-      properties = { tag = tags[screen.count()][3] } },
+      properties = { tag = tags[screen.count()][3][4] } },
     { rule = { class = "Firefox",  instance = "Navigator" },
       properties = { tag = tags[screen.count()][3] } },
     { rule = { class = "Emacs",    instance = "emacs" },
@@ -500,6 +548,10 @@ awful.rules.rules = {
       properties = { floating = true }, callback = awful.titlebar.add  },
     { rule = { instance = "firefox-bin" },
       properties = { floating = true }, callback = awful.titlebar.add  },
+    { rule = { class = "Rhythmbox",  instance = "rhythmbox" },
+      properties = { tag = tags[screen.count()][9] } },
+    { rule = { class = "Totem",  instance = "totem" },
+      properties = { tag = tags[screen.count()][9] } },
     { rule = { name  = "Alpine" },      properties = { tag = tags[1][4]} },
     { rule = { class = "Pidgin" },    properties = { tag = tags[1][5]} },
     { rule = { class = "Akregator" },   properties = { tag = tags[1][8]} },
@@ -560,6 +612,6 @@ for s = 1, screen.count() do screen[s]:add_signal("arrange", function ()
     end
   end)
 end
-os.execute("/home/gnufede/.bin/start2.sh &")
+os.execute(home .. "/.bin/start2.sh &")
 -- }}}
 -- }}}
