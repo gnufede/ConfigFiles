@@ -186,18 +186,23 @@ volbar    = awful.widget.progressbar()
 volwidget = widget({ type = "textbox" })
 -- Progressbar properties
 volbar:set_vertical(true):set_ticks(true)
-volbar:set_height(12):set_width(8):set_ticks_size(2)
+volbar:set_height(12):set_width(9):set_ticks_size(1)
 volbar:set_background_color(beautiful.fg_off_widget)
 volbar:set_gradient_colors({ beautiful.fg_widget,
    beautiful.fg_center_widget, beautiful.fg_end_widget
 }) -- Enable caching
 vicious.cache(vicious.widgets.volume)
 -- Register widgets
-vicious.register(volbar,    vicious.widgets.volume,  "$1",  2, "Master")
-vicious.register(volwidget, vicious.widgets.volume, " $1%", 2, "Master")
+vicious.register(volbar,    vicious.widgets.volume,  "$1",  1, "Master")
+vicious.register(volwidget, vicious.widgets.volume, " $1%", 1, "Master")
 -- Register buttons
 volbar.widget:buttons(awful.util.table.join(
-   awful.button({ }, 1, function () exec("alsamixer") end),
+   awful.button({ }, 1, function () exec("amixer -q set Master mute") volbar:set_gradient_colors({ beautiful.fg_end_widget,
+   beautiful.fg_end_widget, beautiful.fg_end_widget
+})end),
+   awful.button({ }, 3, function () exec("amixer -q set Master unmute") volbar:set_gradient_colors({ beautiful.fg_widget,
+   beautiful.fg_widget, beautiful.fg_widget
+}) end),
    awful.button({ }, 4, function () exec("amixer -q set Master 2dB+", false) end),
    awful.button({ }, 5, function () exec("amixer -q set Master 2dB-", false) end)
 )) -- Register assigned buttons
@@ -207,7 +212,7 @@ vicious.cache(vicious.widgets.gmail)
 gmailicon = widget({ type = "imagebox" })
 gmailicon.image = image(beautiful.widget_mail)
 gmailwidget = widget({ type = "textbox" })
-vicious.register(gmailwidget, vicious.widgets.gmail,"<span color='#F1F1F1'>${count}</span>", 260)
+vicious.register(gmailwidget, vicious.widgets.gmail,"<span color='#F1F1F1'>${count1}</span>,<span color='#C1C1C1'>${count}</span>", 190)
 -- {{{ Date and time
 dateicon = widget({ type = "imagebox" })
 dateicon.image = image(beautiful.widget_date)
@@ -226,7 +231,7 @@ datewidget:buttons(awful.util.table.join(
 weathericon = widget({ type = "imagebox" })
 weathericon.image = image(beautiful.widget_weather)
 weathertext = widget({ type = "textbox" })
-vicious.register(weathertext, vicious.widgets.weather, "${tempc},${sky} ", 1800, "LEMD")
+vicious.register(weathertext, vicious.widgets.weather, "${tempc},${sky}", 1800, "LEMD")
 
 
 -- {{{ System tray
@@ -280,7 +285,9 @@ for s = 1, screen.count() do
         separator, volwidget,  volbar.widget, volicon,
         --separator, orgwidget,  orgicon,
         separator, weathertext,  weathericon,
-        separator, gmailwidget, gmailicon,
+        separator, 
+	gmailwidget, 
+	gmailicon,
         separator, upicon,     netwidget, dnicon,
         separator, 
 	fstextwidget, 
