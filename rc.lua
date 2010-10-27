@@ -47,7 +47,7 @@ layouts = {
 
 -- {{{ Tags
 tags = {
-  names  = { "term", "emacs", "web", "mail", "im", 6, 7, "rss", "media" },
+  names  = { "term", "work", "web", "mail", "im", 6, 7, "rss", "media" },
   layout = { layouts[2], layouts[1], layouts[1], layouts[4], layouts[1],
              layouts[6], layouts[6], layouts[5], layouts[6]
 }}
@@ -88,20 +88,45 @@ vicious.register(cpugraph,  vicious.widgets.cpu,      "$1")
 -- {{{ Battery state
 baticon = widget({ type = "imagebox" })
 baticon.image = image(beautiful.widget_bat)
+
+batbar    = awful.widget.progressbar()
+batbar:set_vertical(true):set_ticks(true)
+batbar:set_height(12):set_width(9):set_ticks_size(1)
+batbar:set_background_color(beautiful.fg_off_widget)
+batbar:set_gradient_colors({ beautiful.fg_end_widget,
+   beautiful.fg_widget, beautiful.fg_center_widget
+}) -- Enable caching
+-- Register widgets
+vicious.register(batbar,    vicious.widgets.bat,  "$2",  61, "BAT0")
+-- Register buttons
+batbar.widget:buttons(awful.util.table.join(
+   awful.button({ }, 1, function () 
+   --exec(home .. "/.bin/inhibit.sh")
+   batbar:set_gradient_colors({ beautiful.fg_end_widget,
+   beautiful.fg_end_widget, beautiful.fg_end_widget
+})end),
+   awful.button({ }, 3, function () 
+   --exec(home .. "/.bin/dishinibit.sh")
+   batbar:set_gradient_colors({ beautiful.fg_end_widget,
+   beautiful.fg_widget, beautiful.fg_center_widget
+}) end)
+)) -- Register assigned buttons
+-- }}}
 -- Initialize widget
 batwidget = widget({ type = "textbox" })
 -- Register widget
 vicious.register(batwidget, vicious.widgets.bat,
 function (widget, args)
   if (args[1] == '+' or args[1] == '-') and ( args[2] <= 98) then 
-    return string.format("%s%s %s",args[1],args[2],args[3])
+    return string.format("%s%s",args[1],args[3])
   --  return string.format("%02d%02d %02d", args[1], args[2], args[3])
   else
-    return string.format("%s%s",args[1],args[2])
+    return string.format("%s",args[1])
   end
       end, 
   61, "BAT0")
 -- }}}
+batwidget:buttons(batbar.widget:buttons())
 
 ---- {{{ Memory usage
 --memicon = widget({ type = "imagebox" })
@@ -180,8 +205,8 @@ vicious.register(netwidget, vicious.widgets.net,
 --  end --FIXME
 
  '<span color="'
-  .. beautiful.fg_netdn_widget ..'">${wlan0 down_kb}</span> <span color="'
-  .. beautiful.fg_netup_widget ..'">${wlan0 up_kb}</span>'
+  .. beautiful.fg_netdn_widget ..'">${wlan1 down_kb}</span> <span color="'
+  .. beautiful.fg_netup_widget ..'">${wlan1 up_kb}</span>'
 
 , 3)
 -- }}}
@@ -243,13 +268,13 @@ gmailbar    = awful.widget.progressbar()
 --}) -- Enable caching
 --vicious.register(gmailbar, vicious.widgets.gmail,"${count}", 190)
 gmailbar.widget:buttons(awful.util.table.join(
-   awful.button({ }, 1, function () exec("chromium-browser --app=http://mail.google.com", false) end)
+   awful.button({ }, 1, function () exec("chromium-browser --enable-accelerated-2d-canvas --app=http://mail.google.com", false) end)
 ))
 gmailwidget = widget({ type = "textbox" })
 vicious.register(gmailwidget, vicious.widgets.gmail,
 
-"${count}"
---"<span color='#F1F1F1'>${count1}</span>,<span color='#C1C1C1'>${count}</span>" --FIXME
+--"${count}"
+"<span color='#F1F1F1'>${count1}</span>,<span color='#C1C1C1'>${count}</span>" --FIXME
 
 , 190)
 -- Register assigned buttons
@@ -324,7 +349,7 @@ for s = 1, screen.count() do
         },
         s == screen.count() and systray or nil,
         separator, datewidget, dateicon,
-        separator, batwidget, baticon,
+        separator, batwidget, batbar.widget, baticon,
         separator, volwidget,  volbar.widget, volicon,
         --separator, orgwidget,  orgicon,
         separator, weathertext,  weathericon,
@@ -368,8 +393,8 @@ globalkeys = awful.util.table.join(
     -- {{{ Applications
 --    awful.key({ modkey }, "e", revelation.revelation),
     --awful.key({ modkey }, "e", function () exec("emacsclient -n -c") end),
-    awful.key({ modkey }, "t", function () exec("urxvt", false) end),
-    awful.key({ modkey }, "w", function () exec("chromium-browser") end),
+    awful.key({ modkey }, "t", function () exec("xterm", false) end),
+    awful.key({ modkey }, "w", function () exec("chromium-browser --enable-accelerated-2d-canvas") end),
    -- awful.key({ altkey }, "F1",  function () exec("urxvt") end),
     awful.key({}, "F1", function () scratch.drop("urxvt", "bottom") end),
     awful.key({ modkey }, "a", function () exec("urxvt -T Alpine -e alpine_exp") end),
