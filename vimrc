@@ -31,7 +31,6 @@ set backspace=indent,eol,start " make backspace a more flexible
 "let g:pydiction_location = '/usr/share/pydiction/complete-dict'
 "autocmd FileType python set omnifunc=pythoncomplete#Complete
 autocmd FileType python set autoindent
-colorscheme slate
 "highlight OverLength ctermbg=red ctermfg=darkred guibg=#FFD9D9
 "match OverLength /\%81v.\+/
 
@@ -54,6 +53,14 @@ function! Smart_TabComplete()
 endfunction 
 
 inoremap <tab> <c-r>=Smart_TabComplete()<CR>
+
+autocmd FileType python set omnifunc=pythoncomplete#Complete
+autocmd FileType javascript set omnifunc=javascriptcomplete#CompleteJS
+autocmd FileType html set omnifunc=htmlcomplete#CompleteTags
+autocmd FileType css set omnifunc=csscomplete#CompleteCSS
+autocmd FileType xml set omnifunc=xmlcomplete#CompleteTags
+autocmd FileType php set omnifunc=phpcomplete#CompletPHP
+autocmd FileType c set omnifunc=ccomplete#Complete
 
 set background=light
 colorscheme solarized
