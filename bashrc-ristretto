@@ -1,0 +1,44 @@
+#
+# ~/.bashrc
+#
+
+# If not running interactively, don't do anything
+[[ $- != *i* ]] && return
+
+SSH_ENV="$HOME/.ssh/environment"
+
+function start_agent {
+     echo "Initialising new SSH agent..."
+     /usr/bin/ssh-agent | sed 's/^echo/#echo/' > "${SSH_ENV}"
+     echo succeeded
+     chmod 600 "${SSH_ENV}"
+     . "${SSH_ENV}" > /dev/null
+     /usr/bin/ssh-add;
+}
+
+# Source SSH settings, if applicable
+
+if [ -f "${SSH_ENV}" ]; then
+     . "${SSH_ENV}" > /dev/null
+     #ps ${SSH_AGENT_PID} doesn't work under cywgin
+     ps -ef | grep ${SSH_AGENT_PID} | grep ssh-agent$ > /dev/null || {
+         start_agent;
+     }
+else
+     start_agent;
+fi 
+
+source ~/.git-completion.sh
+
+alias ls='ls --color=auto'
+alias ssh='ssh -C4c arcfour,blowfish-cbc'
+
+
+case "$TERM" in
+    rxvt-unicode-256color)
+        TERM=rxvt-unicode
+        ;;
+esac
+
+PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u\[\033[00m\]@\h\[\033[01;34m\] \W$(__git_ps1 "\[\033[01;32m\] <%s>")\[\033[00m\]\$ '
+#PS1='[\u@\h \W$(__git_ps1 " (%s)")]\$ '
